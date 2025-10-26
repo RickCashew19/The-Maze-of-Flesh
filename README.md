@@ -1,7 +1,7 @@
 Game by: 4-Bit Party
-Rick Warren Nicasio
-Emmge Ramos
-Khem Shwartz Cabutad
+Rick Warren Nicasio,
+Emmge Ramos,
+Khem Shwartz Cabutad,
 Jay Kyle Tanedo
 
 INTRODUCTION
