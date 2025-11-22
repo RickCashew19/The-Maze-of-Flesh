@@ -22,6 +22,7 @@ public class Player extends Entity{
 	int textCounter = 0;
 	public boolean attackCanceled = false;
 	public boolean lightUpdated = false;
+	public boolean exhausted = false;
 	
 	public Player(GamePanel gp, KeyHandler keyH) {
 		super(gp);
@@ -60,12 +61,14 @@ public class Player extends Entity{
 		// PLAYER STATUS
 		maxLife = 8;
 		life = maxLife;
+		maxStamina = 180; 
+		stamina = maxStamina;
 		
 		// --- FPR RPG ---
 		level =1;
 		strength = 2;
 		dexterity = 2;
-		maxMana = 2;
+		maxMana = 0;
 		mana = maxMana;
 		ammo = 10;
 		defense = 1;
@@ -206,6 +209,7 @@ public class Player extends Entity{
 				direction = "right";					
 				lastKeyPressed = "right";
 			}
+			// here ang sprint
 			
 			// --- CHECK TILE COLLISION
 			collisionOn = false;
@@ -240,6 +244,23 @@ public class Player extends Entity{
 				}
 			}
 			
+			// SPRINT INPUT  PLAYER SPRINT
+			boolean wantsToSprint = keyH.sprintPressed;
+
+			// STAMINA LOGIC
+			if (wantsToSprint && stamina > 0 && exhausted == false) {
+
+			    // Sprinting allowed
+			    speed = defaultSpeed + 2;
+			    stamina -= 2; // drain per frame
+
+			    if (stamina <= 0) {
+			        stamina = 0;
+			        exhausted = true; // no more sprinting
+			    }
+			}
+
+			// PLAYER ATTACK
 			if(keyH.enterPressed == true && attackCanceled == false) {
 				gp.playSE(5);
 				attacking = true;
@@ -291,7 +312,20 @@ public class Player extends Entity{
 			}
 			
 		}
+		// STAMINA REGENERATION
+		if(gp.keyH.sprintPressed == false) {
+		    // Not sprinting → regen
+		    speed = defaultSpeed;
+		    if (stamina < maxStamina) {
+		        stamina += 1; // regen per frame
+		    }
+		    // If stamina has recovered enough, remove exhaustion
+		    if (exhausted && stamina > maxStamina * 0.3) {
+		        exhausted = false;
+		    }
+		}
 		
+		// PROJECTILE
 		if(gp.keyH.shotKeyPressed == true && projectile.alive == false && 
 				shotAvailableCounter == 30 && projectile.haveResource(this) == true) {
 			
