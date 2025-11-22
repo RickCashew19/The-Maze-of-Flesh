@@ -59,9 +59,9 @@ public class Player extends Entity{
 		direction = "down00";
 		
 		// PLAYER STATUS
-		maxLife = 8;
+		maxLife = 6;
 		life = maxLife;
-		maxStamina = 180; 
+		maxStamina = 100; 
 		stamina = maxStamina;
 		
 		// --- FPR RPG ---
@@ -209,7 +209,8 @@ public class Player extends Entity{
 				direction = "right";					
 				lastKeyPressed = "right";
 			}
-			// here ang sprint
+			// SPRINT INPUT  PLAYER SPRINT
+			boolean wantsToSprint = keyH.sprintPressed;
 			
 			// --- CHECK TILE COLLISION
 			collisionOn = false;
@@ -243,9 +244,6 @@ public class Player extends Entity{
 				case "right": worldX += speed; break;
 				}
 			}
-			
-			// SPRINT INPUT  PLAYER SPRINT
-			boolean wantsToSprint = keyH.sprintPressed;
 
 			// STAMINA LOGIC
 			if (wantsToSprint && stamina > 0 && exhausted == false) {
@@ -257,6 +255,7 @@ public class Player extends Entity{
 			    if (stamina <= 0) {
 			        stamina = 0;
 			        exhausted = true; // no more sprinting
+			        speed = defaultSpeed;
 			    }
 			}
 
