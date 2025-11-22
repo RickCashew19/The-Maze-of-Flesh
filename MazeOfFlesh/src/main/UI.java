@@ -170,7 +170,29 @@ public class UI {
 			i++;
 			x += 40;
 		}
+		// --------------------------------------------------------- //
+		// STAMINA BAR
+
+		x = (int)(gp.tileSize*0.8);
+		y = (int)(gp.tileSize*1.8);
 		
+		int barWidth = gp.tileSize * 3;      // length of stamina bar
+		int barHeight = 12;                  // thickness
+
+		// Outline
+		g2.setColor(Color.black);
+		g2.fillRect(x - 2, y - 2, barWidth + 4, barHeight + 4);
+
+		// Background (empty stamina)
+		g2.setColor(new Color(60, 60, 60));
+		g2.fillRect(x, y, barWidth, barHeight);
+
+		// Filled part (stamina)
+		float staminaPercent = (float)gp.player.stamina / gp.player.maxStamina;
+		int currentWidth = (int)(barWidth * staminaPercent);
+
+		g2.setColor(new Color(0, 200, 80)); // green
+		g2.fillRect(x, y, currentWidth, barHeight);
 	}
 	
 	public void drawMessage() {
