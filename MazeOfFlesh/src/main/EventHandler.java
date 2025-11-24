@@ -1,5 +1,6 @@
 package main;
 
+import data.Progress;
 import entity.Entity;
 
 public class EventHandler {
@@ -59,24 +60,32 @@ public class EventHandler {
 	}
 	
 	public void checkEvent() {
-		
-		// Check if the player character is one tile away from event
-		int xDistance = Math.abs(gp.player.worldX - previousEventX);
-		int yDistance = Math.abs(gp.player.worldY - previousEventY);
-		int distance = Math.max(xDistance, yDistance);
-		if(distance > gp.tileSize) {
-			canTouchEvent = true;
-		}
-		
-		if(canTouchEvent == true) {
-			
-			if(hit(0, 27, 26, "any") == true) { damagePit(gp.dialogueState); }
-			else if(hit(0, 10, 1, "any") == true) { healing(gp.dialogueState); }
-			else if(hit(0, 10, 3, "any") == true) { damagePit(gp.dialogueState); }
-			
-		}
-				
+	    int xDistance = Math.abs(gp.player.worldX - previousEventX);
+	    int yDistance = Math.abs(gp.player.worldY - previousEventY);
+	    int distance = Math.max(xDistance, yDistance);
+
+	    if (distance > gp.tileSize) canTouchEvent = true;
+
+	    if (canTouchEvent) {
+	        // Check if player is on maze entrance tile
+	        if (hit(0, 15, 9, "any")) {  teleport(1, 1, 16, gp.mazeArea); }
+	        else if (hit(0, 16, 9, "any")) {  teleport(1, 1, 17, gp.mazeArea); }
+	        if (hit(1,0,16, "any")) {  teleport(0, 15, 9, gp.mazeArea); }
+	        else if (hit(1,0,17, "any")) {  teleport(0, 16, 9, gp.mazeArea); }
+	        
+	        
+	        else if (hit(1, 31, 10, "any")) {  teleport(2, 14, 1, gp.mazeArea); }
+	        else if (hit(1, 31, 11, "any")) {  teleport(2, 15, 1, gp.mazeArea); }
+	        else if (hit(2,14,0, "any")) {  teleport(1,31,10, gp.mazeArea); }
+	        else if (hit(2,15,0, "any")) {  teleport(1,31,11, gp.mazeArea); }
+	        
+	        else if (hit(2, 31, 16, "any")) {  teleport(3, 17, 1, gp.mazeArea); }
+	        else if (hit(2, 31, 17, "any")) {  teleport(3, 18, 1, gp.mazeArea); }
+	        else if (hit(3, 17, 1, "any")) {  teleport(2, 31, 16, gp.mazeArea); }
+	        else if (hit(3, 18, 1, "any")) {  teleport(2, 31, 17, gp.mazeArea); }
+	    }
 	}
+
 	
 	public boolean hit(int map, int col, int row, String reqDirection) {
 		
@@ -144,7 +153,8 @@ public class EventHandler {
 		canTouchEvent = false;
 		gp.playSE(14);
 	}
-	
+
+
 	public void speak(Entity entity) {
 		
 		if(gp.keyH.enterPressed == true) {
@@ -152,6 +162,14 @@ public class EventHandler {
 			gp.player.attackCanceled = true;
 			entity.speak();
 			
+		}
+	}
+	
+	public void ending() {
+		
+		if(Progress.endingSceneDone == false) {
+			gp.gameState = gp.cutsceneState;
+			gp.csManager.sceneNum = gp.csManager.ending;
 		}
 	}
 }
