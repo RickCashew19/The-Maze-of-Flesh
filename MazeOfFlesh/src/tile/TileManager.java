@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -21,33 +22,121 @@ public class TileManager {
 	public int mapTileNum[][][];
 	boolean drawPath = false;
 	
+	// Below for tile editor
+	ArrayList<String> fileNames = new ArrayList<>();
+	ArrayList<String> collisionStatus = new ArrayList<>();
+	// ----
+	
 	public TileManager(GamePanel gp) {
 		
 		this.gp = gp;
+		
+//		/// Below tile editor
+//		InputStream is = getClass().getResourceAsStream("maps/safeZone.txt");
+//		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+//		
+//		// Getting Tile names and Collision info of a tile
+//		String line;
+//		
+//		try {
+//			while((line = br.readLine()) != null) {
+//				fileNames.add(line);
+//				collisionStatus.add(br.readLine());
+//			}
+//			br.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		
+//		// INITIALIZE THE TILE ARRAY BASE ON THE FILENAMES SIZE
+//		//tile = new Tile[fileNames.size()];
+//		//getTileImage();
+//		
+//		is = getClass().getResourceAsStream("maps/smaple.txt");
+//		br = new BufferedReader(new InputStreamReader(is));
+//		try {
+//			String line2 = br.readLine();
+//			String maxTile[] = line2.split(" ");
+//			
+//			gp.maxWorldCol = maxTile.length;
+//			gp.maxWorldRow = maxTile.length;
+//			mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
+//			
+//			br.close();
+//		} catch (IOException e) {
+//			System.out.println("Exception!");
+//		}
+//		
+//		// MAP
+//		loadMap("/maps/safeZone.txt",0);
+//		
+//		// MAZE
+//		loadMap("/maze/maze001.txt",1);
+//		loadMap("/maze/maze002.txt",2);
+//		loadMap("/maze/maze003.txt",3);
+//		loadMap("/maze/maze004.txt",4);
+//		loadMap("/maze/maze005.txt",5);
+//		/// ---
+		
 		
 		tile = new Tile[50];
 		mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
 		
 		getTileImage();
-		loadMap("/maze/maze001.txt",0);
-		loadMap("/maze/maze002.txt",1);
+		// MAP
+		loadMap("/maps/safeZone.txt",0);
+
+		// MAZE
+		loadMap("/maze/maze001.txt",1);
+		loadMap("/maze/maze002.txt",2);
+		loadMap("/maze/maze003.txt",3);
+		loadMap("/maze/maze004.txt",4);
+		loadMap("/maze/maze005.txt",5);
 	}
 	
 	public void getTileImage() {
-	
-		setup(0,"bloodfloor00", false);
-        setup(1,"bloodfloor01", false);
-        setup(2,"bloodfloor02", false);
-        
-        setup(3,"walls01", true);
-        setup(4,"walls02", true);
-        setup(5,"walls03", true);
-        setup(6,"walls04", true);
-        setup(7,"walls05", true);
-        setup(8,"walls06", true);
-        setup(9,"walls07", true);
-
 		
+//		/// BELOW ARE FOR TILE EDITOR
+//		for(int i = 0; i < fileNames.size(); i++) {
+//			String fileName;
+//			boolean collision;
+//			
+//			// Get file name
+//			fileName = fileNames.get(i);
+//			// Get a collision status
+//			if(collisionStatus.get(i).equals("true")) {
+//				collision = true;
+//			} else {
+//				collision = false;
+//			}
+//			
+//			setup(i,fileName,collision);
+//		}
+//		/// -------------------------
+		
+		// PLACE HOLDER
+		for(int i = 0; i < 10; i++) {
+			setup(i,"void", true);
+		}
+		setup(10,"void", true);
+		
+		// FLOOR ----
+        setup(12,"bloodfloor00", false);
+        setup(13,"bloodfloor01", false);
+        setup(14,"bloodfloor02", false);
+        
+        // WALLS ----
+        setup(15,"walls01", true);
+        setup(16,"walls02", true);
+        setup(17,"walls03", true);
+        setup(18,"walls04", true);
+        setup(19,"walls05", true);
+        setup(20,"walls06", true);
+        setup(21,"walls07", true);
+        setup(22,"walls08", true);
+        setup(23,"walls09", true);
+        setup(24,"walls10", true);
+        setup(25,"walls11", true);
 	}
 	
 	public void setup(int index, String imageName, boolean collision) {
@@ -56,7 +145,8 @@ public class TileManager {
 		
 		try {
 			tile[index] = new Tile();
-			tile[index].image = ImageIO.read(getClass().getResourceAsStream("/tiles/" + imageName + ".png"));
+			tile[index].image = ImageIO.read(getClass().getResourceAsStream("/tiles/" + imageName + ".png")); // For manual
+//			tile[index].image = ImageIO.read(getClass().getResourceAsStream("/tiles/" + imageName));// For tile editor
 			tile[index].image = uTool.scaleImage(tile[index].image, gp.tileSize,gp.tileSize);
 			tile[index].collision = collision;
 			
