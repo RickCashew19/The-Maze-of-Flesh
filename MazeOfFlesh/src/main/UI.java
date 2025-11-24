@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
+
 import object.OBJ_Coin_Gold;
 import object.OBJ_Heart;
 import object.OBJ_Key;
@@ -23,7 +25,7 @@ public class UI {
 	GamePanel gp;
 	Graphics2D g2;
 	public Font purisaB;
-	BufferedImage heart_full, heart_half, heart_empty, crystal_full, crystal_blank,coin;
+	BufferedImage heart_full, heart_half, heart_empty, crystal_full, crystal_blank,coin, bg;
 	public boolean messageOn = false;
 	ArrayList<String> message = new ArrayList<>();
 	ArrayList<Integer> messageCounter = new ArrayList<>();
@@ -224,7 +226,14 @@ public class UI {
 	}
 	
 	public void drawTitleScreen() {
-		
+	
+//	    try {
+//	        bg = ImageIO.read(getClass().getResourceAsStream("/maps/shrek.png"));
+//	    } catch (Exception e) {
+//	        e.printStackTrace();
+//	    }
+//	    g2.drawImage(bg, 0, 0, gp.screenWidth, gp.screenHeight, null);
+//		
 		g2.setColor(new Color(200, 200, 200)); // BLACK NIG-  RGB
 		g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
 		
@@ -370,7 +379,7 @@ public class UI {
 				charIndex = 0;
 				combinedText = "";
 				
-				if(gp.gameState == gp.dialogueState) {
+				if(gp.gameState == gp.dialogueState || gp.gameState == gp.cutsceneState) {
 					npc.dialogueIndex++;
 					gp.keyH.enterPressed = false;
 				}
@@ -381,6 +390,9 @@ public class UI {
 
 			if(gp.gameState == gp.dialogueState) {
 				gp.gameState = gp.playState;
+			}
+			if(gp.gameState == gp.cutsceneState) {
+				gp.csManager.scenePhase++;
 			}
 		}
 		

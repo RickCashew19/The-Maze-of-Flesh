@@ -36,8 +36,8 @@ public class GamePanel extends JPanel implements Runnable{
 	public final int screenHeight = tileSize * maxScreenRow; // 768 pixels // wrong spelling height
 	
 	// WORLD SETTINGS
-	public final int maxWorldCol = 64;
-	public final int maxWorldRow = 64;
+	public final int maxWorldCol = 32;
+	public final int maxWorldRow = 32;
 	public final int maxMap = 10;
 	public int currentMap = 0;
 	// FOR FULL SCREEN
@@ -70,6 +70,7 @@ public class GamePanel extends JPanel implements Runnable{
 	Map map = new Map(this);
 	SaveLoad saveLoad = new SaveLoad(this);
 	public EntityGenerator eGenerator = new EntityGenerator(this);
+	public CutsceneManager csManager = new CutsceneManager(this);
 	Thread gameThread;
 	
 	// ENTITY AND OBJECT
@@ -95,6 +96,7 @@ public class GamePanel extends JPanel implements Runnable{
 	public final int transitionState = 7;
 	public final int tradeState = 8;
 	public final int mapState = 9;
+	public final int cutsceneState = 10;
 	
 	// Area
 	public int currentArea;
@@ -133,7 +135,9 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	public void resetGame(boolean restart) {
 		
+		stopMusic();
 		player.setDefaultPositions();
+		removeTempEntity();
 		player.restorStatus();
 		player.resetCounter();
 		aSetter.setNPC();
@@ -344,6 +348,9 @@ public class GamePanel extends JPanel implements Runnable{
 			// MINI MAP
 			map.drawMiniMap(g2);
 			
+			// CUTSCENE
+			csManager.draw(g2);
+			
 			// -- UI
 			ui.draw(g2);
 		}
@@ -410,6 +417,18 @@ public class GamePanel extends JPanel implements Runnable{
 		}
 		
 		currentArea = nextArea;
+	}
+	
+	public void removeTempEntity() {
+		
+		for(int mapNum = 0; mapNum < maxMap; mapNum++) {
+			
+			for(int i = 0; i < obj[1].length; i++) {
+				if(obj[mapNum][i] != null && obj[mapNum][i].temp == true) {
+					obj[mapNum][i] = null;
+				}
+			}
+		}
 	}
 }
 
