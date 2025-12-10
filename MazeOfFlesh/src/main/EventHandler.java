@@ -2,19 +2,12 @@ package main;
 
 import data.Progress;
 import entity.Entity;
-import tile.ProceduralLayout;
-import tile.RoomManager;
 
 public class EventHandler {
 
     GamePanel gp;
     EventRect eventRect[][][];
     Entity eventMaster;
-    
-    // Procedural generation system
-    ProceduralLayout proceduralLayout;
-    int currentGridX, currentGridY;
-    int currentRoomIndex;
 
     int previousEventX, previousEventY;
     boolean canTouchEvent = true;
@@ -22,175 +15,35 @@ public class EventHandler {
 
     public EventHandler(GamePanel gp) {
         this.gp = gp;
-        
-        // Initialize RoomManager with normal difficulty
-        gp.rManager = new RoomManager(gp, RoomManager.NORMAL);
-        
-        // Initialize procedural layout
-        proceduralLayout = new ProceduralLayout(gp.rManager);
-        proceduralLayout.setMaxNormalRooms(getMaxNormalRoomsFromDifficulty(RoomManager.NORMAL));
-        
+         
         eventMaster = new Entity(gp);
         eventRect = new EventRect[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
 
         initializeEventRects();
-        generateNewGameLayout();
         setDialogue();
     }
     
-    private void initializeEventRects() {
+    public void initializeEventRects() {
         for (int map = 0; map < gp.maxMap; map++) {
             for (int col = 0; col < gp.maxWorldCol; col++) {
                 for (int row = 0; row < gp.maxWorldRow; row++) {
                     eventRect[map][col][row] = new EventRect();
                     eventRect[map][col][row].x = 20;
                     eventRect[map][col][row].y = 20;
-                    eventRect[map][col][row].width = 8;
-                    eventRect[map][col][row].height = 8;
+                    eventRect[map][col][row].width =20;
+                    eventRect[map][col][row].height = 20;
                     eventRect[map][col][row].eventRectDefaultX = eventRect[map][col][row].x;
                     eventRect[map][col][row].eventRectDefaultY = eventRect[map][col][row].y;
                 }
             }
         }
     }
-    
-    public void generateNewGameLayout() {
-        proceduralLayout.generateNewLayout();
-        
-        // Find starting room position (center of layout)
-        int[] startPos = proceduralLayout.getStartPosition();
-        currentGridX = startPos[0];
-        currentGridY = startPos[1];
-        
-        // Get the starting room index
-        currentRoomIndex = proceduralLayout.getRoomAtPosition(currentGridX, currentGridY);
-        gp.currentArea = currentRoomIndex;
-        
-        // Mark starting room as used
-        gp.rManager.markRoomUsed(currentRoomIndex);
-        
-        System.out.println("Game started in room " + currentRoomIndex + " at position (" + currentGridX + "," + currentGridY + ")");
-    }
-    
-    private int getMaxNormalRoomsFromDifficulty(int difficulty) {
-        switch (difficulty) {
-            case RoomManager.EASY: return 4;
-            case RoomManager.NORMAL: return 8;
-            case RoomManager.HARD: return 17;
-            default: return 8;
-        }
-    }
-    
-    /**
-     * CALL THIS WHEN STARTING A NEW GAME
-     */
-    public void startNewGame() {
-        gp.rManager.resetForNewGame();
-        generateNewGameLayout();
-    }
-    
-    /**
-     * CHECK FOR ROOM TRANSITIONS WHEN PLAYER HITS EDGES
-     */
-    private void checkRoomTransitions() {
-        int playerCol = gp.player.worldX / gp.tileSize;
-        int playerRow = gp.player.worldY / gp.tileSize;
-        
-        // Check each direction if player is at the edge
-        if (playerCol <= 0) {
-            moveToAdjacentRoom(RoomManager.LEFT_DOOR);
-        }
-        else if (playerCol >= gp.maxWorldCol - 1) {
-            moveToAdjacentRoom(RoomManager.RIGHT_DOOR);
-        }
-        else if (playerRow <= 0) {
-            moveToAdjacentRoom(RoomManager.UP_DOOR);
-        }
-        else if (playerRow >= gp.maxWorldRow - 1) {
-            moveToAdjacentRoom(RoomManager.DOWN_DOOR);
-        }
-    }
-    
-    private void moveToAdjacentRoom(int exitDirection) {
-//        int newRoomIndex = gp.rManager.findConnectingRoom(currentRoomIndex, exitDirection);
-//        
-//        if (newRoomIndex != -1) {
-//            // Mark the new room as used
-//            gp.rManager.markRoomUsed(newRoomIndex);
-//            
-//            // Calculate spawn position based on exit direction
-//            int spawnCol = 0, spawnRow = 0;
-//            switch (exitDirection) {
-//                case RoomManager.LEFT_DOOR:
-//                    spawnCol = gp.maxWorldCol - 2; 
-//                    spawnRow = gp.maxWorldRow / 2; 
-//                    currentGridX--;
-//                    break;
-//                case RoomManager.RIGHT_DOOR:
-//                    spawnCol = 1; 
-//                    spawnRow = gp.maxWorldRow / 2; 
-//                    currentGridX++;
-//                    break;
-//                case RoomManager.UP_DOOR:
-//                    spawnCol = gp.maxWorldCol / 2; 
-//                    spawnRow = gp.maxWorldRow - 2; 
-//                    currentGridY--;
-//                    break;
-//                case RoomManager.DOWN_DOOR:
-//                    spawnCol = gp.maxWorldCol / 2; 
-//                    spawnRow = 1; 
-//                    currentGridY++;
-//                    break;
-//            }
-//            
-//            // Update current room
-//            currentRoomIndex = newRoomIndex;
-//            gp.currentArea = newRoomIndex;
-//            
-//            // TELEPORT TO THE CORRECT MAP INDEX
-//            // RoomManager roomIndex (0-24) corresponds to map index (1-25)
-//            int targetMap = newRoomIndex + 1; 
-//           // teleport(targetMap, spawnCol, spawnRow, gp.indoor);
-//            
-//            // Handle room-specific events
-//            handleRoomEntry(newRoomIndex);
-//            
-//            System.out.println("Moved to room " + newRoomIndex + " (map " + targetMap + ") at grid (" + currentGridX + "," + currentGridY + ")");
-//        } else {
-//            System.out.println("Cannot move - no connecting room available!");
-//        }
-    }
-    
-    private void handleRoomEntry(int roomIndex) {
-        int roomType = gp.rManager.getRoomType(roomIndex);
-        
-        switch (roomType) {
-            case RoomManager.SAFE_ROOM:
-                // Heal player, save game, etc.
-                gp.player.life = gp.player.maxLife;
-                gp.player.mana = gp.player.maxMana;
-                gp.saveLoad.save();
-                System.out.println("Entered safe room - fully healed!");
-                break;
-                
-            case RoomManager.BOSS_ROOM:
-                // Start boss battle
-                System.out.println("BOSS ROOM ENTERED! Prepare for battle!");
-                // Add your boss battle logic here
-                break;
-                
-            case RoomManager.NORMAL_ROOM:
-                // Spawn enemies or other normal room logic
-                System.out.println("Entered normal room");
-                break;
-        }
-    }
 
-    public void setDialogue() {
-        eventMaster.dialogues[0][0] = "You step on a shit!!";
+    private void setDialogue() {
+        eventMaster.dialogues[0][0] = "";
         eventMaster.dialogues[1][0] = "HEAL!!!!\n(Progress Saved)";
-        eventMaster.dialogues[2][0] = "Your State is Full!!\n(Progressed saved)";
-        eventMaster.dialogues[3][0] = "You step on a shit!!";
+        eventMaster.dialogues[2][0] = "Your Health is Full!!\n(Progressed saved)";
+        eventMaster.dialogues[3][0] = "";
     }
 
     public void checkEvent() {
@@ -202,42 +55,81 @@ public class EventHandler {
             canTouchEvent = true;
 
         if (canTouchEvent) {
-            // Check for room transitions first
-            checkRoomTransitions();
+        	
+        	// safe to maze01
+            hitTele(0,34,14,"safeArea",4,0,14,"mazeArea");
+            hitTele(0,34,15,"safeArea",4,0,15,"mazeArea");
+            hitTele(0,34,16,"safeArea",4,0,16,"mazeArea");
+
+            hitTele(4,2,34,"mazeArea",5,2,0,"mazeArea");
+            hitTele(4,3,34,"mazeArea",5,3,0,"mazeArea");
+            hitTele(4,4,34,"mazeArea",5,4,0,"mazeArea");
             
-            // Then check your existing teleport events
-            if (hit(0, 15, 9, "any")) {
-                teleport(1, 1, 16, gp.mazeArea);
-            } else if (hit(0, 16, 9, "any")) {
-                teleport(1, 1, 17, gp.mazeArea);
+            hitTele(5,34,30,"mazeArea",6,0,2,"mazeArea");
+            hitTele(5,34,31,"mazeArea",6,0,3,"mazeArea");
+            hitTele(5,34,32,"mazeArea",6,0,4,"mazeArea");
+            
+            hitTele(6,18,34,"mazeArea",1,16,0,"safeArea");
+            hitTele(6,19,34,"mazeArea",1,17,0,"safeArea");
+            hitTele(6,20,34,"mazeArea",1,18,0,"safeArea");
+            
+            hitTele(1,34,18,"safeArea",7,0,2,"mazeArea");
+            hitTele(1,34,19,"safeArea",7,0,3,"mazeArea");
+            hitTele(1,34,20,"safeArea",7,0,4,"mazeArea");
+            
+            hitTele(7,33,30,"mazeArea",8,0,30,"mazeArea");
+            hitTele(7,33,31,"mazeArea",8,0,31,"mazeArea");
+            hitTele(7,33,32,"mazeArea",8,0,32,"mazeArea");
+            
+            hitTele(8,2,0,"mazeArea",9,2,34,"mazeArea");
+            hitTele(8,3,0,"mazeArea",9,3,34,"mazeArea");
+            hitTele(8,4,0,"mazeArea",9,4,34,"mazeArea");
+            
+            hitTele(9,30,0,"mazeArea",2,17,34,"safeArea");
+            hitTele(9,31,0,"mazeArea",2,18,34,"safeArea");
+            hitTele(9,32,0,"mazeArea",2,19,34,"safeArea");
+            
+            hitTele(2,34,7,"safeArea",10,0,2,"mazeArea");
+            hitTele(2,34,8,"safeArea",10,0,3,"mazeArea");
+            hitTele(2,34,9,"safeArea",10,0,4,"mazeArea");
+            
+            hitTele(10,34,18,"mazeArea",11,0,30,"mazeArea");
+            hitTele(10,34,19,"mazeArea",11,0,31,"mazeArea");
+            hitTele(10,34,20,"mazeArea",11,0,32,"mazeArea");
+            
+            hitTele(11,6,34,"mazeArea",12,14,0,"mazeArea");
+            hitTele(11,7,34,"mazeArea",12,15,0,"mazeArea");
+            hitTele(11,8,34,"mazeArea",12,16,0,"mazeArea");
+            
+            hitTele(12,30,34,"mazeArea",3,1,0,"safeArea");
+            hitTele(12,31,34,"mazeArea",3,2,0,"safeArea");
+            hitTele(12,32,34,"mazeArea",3,1,0,"safeArea");
+            
+            if (hit(3, 16, 0, "any")) {
+            	ending() ;
             }
-            if (hit(1, 0, 16, "any")) {
-                teleport(0, 15, 9, gp.mazeArea);
-            } else if (hit(1, 0, 17, "any")) {
-                teleport(0, 16, 9, gp.mazeArea);
+            if (hit(3, 17, 0, "any")) {
+            	ending() ;
             }
-            else if (hit(1, 31, 16, "any")) {
-                teleport(2, 16, 1, gp.mazeArea);
-            } else if (hit(1, 31, 17, "any")) {
-                teleport(2, 17, 1, gp.mazeArea);
-            } else if (hit(2, 16, 0, "any")) {
-                teleport(1, 31, 16, gp.mazeArea);
-            } else if (hit(2, 17, 0, "any")) {
-                teleport(1, 31, 17, gp.mazeArea);
-            }
-            else if (hit(2, 31, 16, "any")) {
-                teleport(3, 17, 1, gp.mazeArea);
-            } else if (hit(2, 31, 17, "any")) {
-                teleport(3, 18, 1, gp.mazeArea);
-            } else if (hit(3, 17, 1, "any")) {
-                teleport(2, 31, 16, gp.mazeArea);
-            } else if (hit(3, 18, 1, "any")) {
-                teleport(2, 31, 17, gp.mazeArea);
-            }
+             
         }
     }
+    private void hitTele(int areaMap, int areaRow,int areaCol,String area1, int areaMap2, int areaRow2, int areaCol2, String area2) {
+        
+    	// Go to next
+    	if (hit(areaMap, areaRow, areaCol, "any")) { 
+    		if(area2.equals("safeArea")) teleport(areaMap2, areaRow2, areaCol2, gp.safeArea);
+    		if(area2.equals("mazeArea")) teleport(areaMap2, areaRow2, areaCol2, gp.mazeArea);
+    	}
+    	
+    	// Go back
+    	if (hit(areaMap2, areaRow2, areaCol2, "any")) { 
+    		if(area1.equals("safeArea")) teleport(areaMap, areaRow, areaCol, gp.safeArea); 
+    		if(area1.equals("mazeArea")) teleport(areaMap, areaRow, areaCol, gp.mazeArea); 
+    	} 
+    }
 
-    public boolean hit(int map, int col, int row, String reqDirection) {
+    private boolean hit(int map, int col, int row, String reqDirection) {
         boolean hit = false;
 
         if (map == gp.currentMap) {
@@ -278,7 +170,7 @@ public class EventHandler {
             gp.playSE(3);
             if (gp.player.life < gp.player.maxLife || gp.player.mana < gp.player.maxMana) {
                 eventMaster.startDialogue(eventMaster, 1);
-                gp.player.life += 1;
+                gp.player.life = gp.player.maxLife;
                 gp.player.mana += 1;
                 gp.saveLoad.save();
             } else {
@@ -287,7 +179,7 @@ public class EventHandler {
         }
     }
 
-    public void teleport(int map, int col, int row, int area) {
+    private void teleport(int map, int col, int row, int area) {
         gp.gameState = gp.transitionState;
         gp.nextArea = area;
         tempMap = map;
@@ -297,15 +189,7 @@ public class EventHandler {
         gp.playSE(14);
     }
 
-    public void speak(Entity entity) {
-        if (gp.keyH.enterPressed == true) {
-            gp.gameState = gp.dialogueState;
-            gp.player.attackCanceled = true;
-            entity.speak();
-        }
-    }
-
-    public void ending() {
+    private void ending() {
         if (Progress.endingSceneDone == false) {
             gp.gameState = gp.cutsceneState;
             gp.csManager.sceneNum = gp.csManager.ending;

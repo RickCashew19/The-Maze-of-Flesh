@@ -94,7 +94,9 @@ public class KeyHandler implements KeyListener {
 
 				if (gp.ui.commandNum == 0) {
 					gp.playSE(1);
-					gp.ui.titleScreenState = 1;
+					gp.stopMusic();
+					gp.gameState = gp.playState;
+					gp.playMusic(0);
 				}
 				if (gp.ui.commandNum == 1) {
 					gp.playSE(1);
@@ -222,17 +224,6 @@ public class KeyHandler implements KeyListener {
 			} else if (showDebugText == true) {
 				showDebugText = false;
 			}
-		}
-		if (code == KeyEvent.VK_R) {
-			switch (gp.currentMap) {
-			case 0:
-				gp.tileM.loadMap("/maps/worldV4.txt", 0);
-				break;
-			case 1:
-				gp.tileM.loadMap("/maps/interior01.txt", 1);
-				break;
-			}
-
 		}
 	}
 
