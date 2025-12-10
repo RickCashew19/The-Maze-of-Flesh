@@ -3,10 +3,10 @@ package object;
 import entity.Entity;
 import main.GamePanel;
 
-public class OBJ_Lantern extends Entity{
+public class OBJ_Lantern extends Entity {
 
 	public static final String objName = "Lantern";
-	
+
 	public OBJ_Lantern(GamePanel gp) {
 		super(gp);
 
@@ -15,7 +15,7 @@ public class OBJ_Lantern extends Entity{
 		down1 = setup("/objects/lantern", gp.tileSize, gp.tileSize);
 		description = "[" + name + "]\nWhy a light source??.";
 		price = 200;
-		lightRadius = 250;
+		lightRadius = 400;
 	}
 
 }

@@ -5,12 +5,12 @@ import java.util.Random;
 import entity.Entity;
 import main.GamePanel;
 
-public class OBJ_Shards extends Entity {
+public class OBJ_ShardsPuple extends Entity {
 
     GamePanel gp;
     public static final String objName = "Shard";
 
-    public OBJ_Shards(GamePanel gp) {
+    public OBJ_ShardsPuple(GamePanel gp) {
         super(gp);
         this.gp = gp;
 
@@ -18,15 +18,15 @@ public class OBJ_Shards extends Entity {
         name = objName;
         stackable = true;
         price = 150;
-        description = "[" + name + "]\nMysterious shard.";
+        description = "[" + name + "]\nA Purple Shard.\nEngulfed with mysterious energy.";
 
         getImage();
         setDialogue();
     }
     
 	private void getImage() {
-		down1 = setup("/objects/REDSHARD", gp.tileSize, gp.tileSize);
-		down2 = setup("/objects/REDSHARD1", gp.tileSize, gp.tileSize);
+		down1 = setup("/objects/PURPSHARD", gp.tileSize, gp.tileSize);
+		down2 = setup("/objects/PURPSHARD1", gp.tileSize, gp.tileSize);
 	}
 	
 	
